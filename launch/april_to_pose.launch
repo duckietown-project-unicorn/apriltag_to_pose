@@ -1,0 +1,11 @@
+<launch>
+  <arg name="duckiebot" default="duckiebot" />
+  <arg name="id" default="66" />
+  
+  
+  <node pkg="image_transport" name="republish" type="republish" args="compressed in:=/$(arg duckiebot)/camera_node/image raw out:=/raw" />
+  <node pkg="apriltag_to_pose" name="rect" type="rect.py" args="$(arg duckiebot)"/>
+  <include file="$(find apriltags2_ros)/launch/continuous_detection.launch"> <arg name="camera_name" value="/$(arg duckiebot)"/> <arg name="image_topic" value="/camera_node/rect"/> <arg name="info_topic" value="/camera_node/camera_info"/> </include>
+  <node pkg="apriltag_to_pose" name="tf_to_pose" type="tf_to_pose_node.py" args="$(arg id)" />
+
+</launch>
