@@ -13,6 +13,7 @@ from image_geometry import PinholeCameraModel
 
 cam_inf_ros = CameraInfo()
 duckiebot = ""
+
 def imgcb(image):
     bridge = CvBridge()
     cv_image = bridge.imgmsg_to_cv2(image, desired_encoding="bgr8")
@@ -28,8 +29,8 @@ def imgcb(image):
     rect_img = bridge.cv2_to_imgmsg(rect_cv, encoding="bgr8")
     rect_img.header=image.header
     global duckiebot
-    topic = '/'+duckiebot+'/camera_node/rect'
-    pub = rospy.Publisher(topic, Image, queue_size=1000)
+    topic_rect = str('/'+duckiebot+'/camera_node/rect')
+    pub = rospy.Publisher(topic_rect, Image, queue_size=1000)
     pub.publish(rect_img)
 
 
@@ -38,8 +39,9 @@ def camcb(cam_info):
     cam_inf_ros = cam_info
 
 if __name__ == '__main__':
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("usage: rect.py duckiebot_name")
+
     else:
         global duckiebot
         duckiebot=sys.argv[1]
@@ -48,10 +50,10 @@ if __name__ == '__main__':
 
     listener = tf.TransformListener()
     global duckiebot
-    topic = '/'+duckiebot+'/camera_node/camera_info'
-    print(topic)
+    topic = str('/'+duckiebot+'/camera_node/camera_info')
     cam_sub = rospy.Subscriber(topic,CameraInfo,camcb)
-    img_sub = rospy.Subscriber('/raw',Image,imgcb)
+    im_topic = str('/'+duckiebot+'/camera_node/image/raw')
+    img_sub = rospy.Subscriber(im_topic,Image,imgcb)
 
     rate = rospy.Rate(50.0)
     i=0
