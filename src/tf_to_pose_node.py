@@ -36,7 +36,7 @@ if __name__ == '__main__':
         i=i+1
         switch_pub.publish(bool_msg)
         try:
-                (trans,rot) = listener.lookupTransform('/camera', ID, rospy.Time())
+                (trans,rot) = listener.lookupTransformFull('/camera',rospy.Time(),ID, rospy.Time(),'/camera')
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         #print(trans)
         tag_pose = Pose()
         tag_pose.position.x = trans[0]
-        tag_pose.position.y = 0
+        tag_pose.position.y = trans[1]
         tag_pose.position.z = trans[2]
         tag_pose.orientation.x = rot[0]
         tag_pose.orientation.y = rot[1]
