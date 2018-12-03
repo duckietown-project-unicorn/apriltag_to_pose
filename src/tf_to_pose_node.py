@@ -4,6 +4,7 @@ import rospy
 import math
 import tf
 import sys
+import numpy as np
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Pose
@@ -36,21 +37,21 @@ if __name__ == '__main__':
         i=i+1
         switch_pub.publish(bool_msg)
         try:
-                (trans,rot) = listener.lookupTransformFull('/camera',rospy.Time(),ID, rospy.Time(),'/camera')
+                (trans,rot) = listener.lookupTransformFull(ID,rospy.Time(),'/camera', rospy.Time(),'/camera')
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
-        Rotmat = (2*rot[0]**2-1)*np.eye(3)+2*rot[0]*np.matrix([[0,-rot[3],rot[2]], [rot[3],0,-rot[1]], [-rot[2],rot[1],0]])+2*np.matmul(rot[1:3],np.transpose(rot[1:3]))
+       # Rotmat = (2*rot[0]**2-1)*np.eye(3)+2*rot[0]*np.matrix([[0,-rot[3],rot[2]], [rot[3],0,-rot[1]], [-rot[2],rot[1],0]])+2*np.matmul(rot[1:3],np.transpose(rot[1:3]))
 
-        Tmat = np.zeros(4)
-        Tmat[1:3,1:3]=Rotmat
-        Tmat[4,4]=1
-        Tmat[1:3,4]=trans
+       # Tmat = np.zeros(4)
+       # Tmat[1:3,1:3]=Rotmat
+       # Tmat[4,4]=1
+       # Tmat[1:3,4]=trans
 
-        Tmat_inv = np.linalg.pinv(Tmat)
+       # Tmat_inv = np.linalg.pinv(Tmat)
 
-        print(Tmat)
-        print(Tmat_inv)
+        #print(Tmat)
+        #print(Tmat_inv)
 
         #print(trans)
         tag_pose = Pose()
