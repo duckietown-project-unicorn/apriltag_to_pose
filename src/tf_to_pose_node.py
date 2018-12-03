@@ -15,7 +15,7 @@ from duckietown_msgs.msg import BoolStamped
 if __name__ == '__main__':
     if len(sys.argv) < 1:
         ROS_WARN("usage: tf_to_pose.py ID")
-        
+
     else:
         ID = '/Tag'+ str(sys.argv[1])
     rospy.init_node('tf_to_pose')
@@ -40,6 +40,17 @@ if __name__ == '__main__':
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
+        Rotmat = (2*rot[0]**2-1)*np.eye(3)+2*rot[0]*np.matrix([[0,-rot[3],rot[2]], [rot[3],0,-rot[1]], [-rot[2],rot[1],0]])+2*np.matmul(rot[1:3],np.transpose(rot[1:3]))
+
+        Tmat = np.zeros(4)
+        Tmat[1:3,1:3]=Rotmat
+        Tmat[4,4]=1
+        Tmat[1:3,4]=trans
+
+        Tmat_inv = np.linalg.pinv(Tmat)
+
+        print(Tmat)
+        print(Tmat_inv)
 
         #print(trans)
         tag_pose = Pose()
@@ -57,7 +68,6 @@ if __name__ == '__main__':
         tag_pose_stamped.header.frame_id="camera"
         path.header=tag_pose_stamped.header
         path.poses.append(tag_pose_stamped)
-
 
         pose_pub.publish(tag_pose_stamped)
         path_pub.publish(path)
